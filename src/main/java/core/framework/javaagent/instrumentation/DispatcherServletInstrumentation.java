@@ -9,6 +9,7 @@ import static net.bytebuddy.matcher.ElementMatchers.namedOneOf;
 
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
+import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeTransformer;
 import io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers;
@@ -39,15 +40,26 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
   @Override
   public void transform(TypeTransformer typeTransformer) {
     typeTransformer.applyAdviceToMethod(
-        namedOneOf("doDispatch")
-            .and(
-                ElementMatchers.takesArgument(
-                    0, ElementMatchers.named("javax.servlet.http.HttpServletRequest")))
-            .and(
-                ElementMatchers.takesArgument(
-                    1, ElementMatchers.named("javax.servlet.http.HttpServletResponse")))
-            .and(ElementMatchers.isProtected()),
-        this.getClass().getName() + "$DoDispatchAdvice");
+            namedOneOf("doService")
+                    .and(
+                            ElementMatchers.takesArgument(
+                                    0, ElementMatchers.named("javax.servlet.http.HttpServletRequest")))
+                    .and(
+                            ElementMatchers.takesArgument(
+                                    1, ElementMatchers.named("javax.servlet.http.HttpServletResponse")))
+                    .and(ElementMatchers.isProtected()),
+            this.getClass().getName() + "$DoServiceAdvice");
+
+//    typeTransformer.applyAdviceToMethod(
+//        namedOneOf("doDispatch")
+//            .and(
+//                ElementMatchers.takesArgument(
+//                    0, ElementMatchers.named("javax.servlet.http.HttpServletRequest")))
+//            .and(
+//                ElementMatchers.takesArgument(
+//                    1, ElementMatchers.named("javax.servlet.http.HttpServletResponse")))
+//            .and(ElementMatchers.isProtected()),
+//        this.getClass().getName() + "$DoDispatchAdvice");
 
     typeTransformer.applyAdviceToMethod(
         namedOneOf("processDispatchResult")
@@ -100,4 +112,16 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
       }
     }
   }
+
+  public static class DoServiceAdvice {
+
+    @Advice.OnMethodEnter(suppress = Throwable.class)
+    public static void onEnter(@Advice.Argument(value = 0) HttpServletRequest request) {
+      Span current = Span.current();
+      if (Objects.nonNull(current)) {
+        current.updateName(request.getMethod() + " " +request.getRequestURI());
+      }
+    }
+  }
+
 }
