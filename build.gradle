@@ -90,6 +90,7 @@ dependencies {
    See https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/contributing/writing-instrumentation-module.md#advice-classes
    */
   compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'
+  compileOnly group: 'io.undertow', name: 'undertow-servlet', version: '2.3.0.Final'
 
   /*
   This dependency is required for DemoSpanProcessor both during compile and runtime.

@@ -7,6 +7,7 @@ package core.framework.javaagent.instrumentation;
 
 import static net.bytebuddy.matcher.ElementMatchers.namedOneOf;
 
+import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
