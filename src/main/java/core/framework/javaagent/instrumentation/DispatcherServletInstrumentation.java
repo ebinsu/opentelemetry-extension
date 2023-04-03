@@ -40,6 +40,17 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
     @Override
     public void transform(TypeTransformer typeTransformer) {
         typeTransformer.applyAdviceToMethod(
+                namedOneOf("doService")
+                        .and(
+                                ElementMatchers.takesArgument(
+                                        0, ElementMatchers.named("javax.servlet.http.HttpServletRequest")))
+                        .and(
+                                ElementMatchers.takesArgument(
+                                        1, ElementMatchers.named("javax.servlet.http.HttpServletResponse")))
+                        .and(ElementMatchers.isProtected()),
+                this.getClass().getName() + "$DoServiceAdvice");
+
+        typeTransformer.applyAdviceToMethod(
                 namedOneOf("processDispatchResult")
                         .and(
                                 ElementMatchers.takesArgument(
@@ -75,6 +86,18 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
                     current.setAttribute(ERROR_CODE, errorCode);
                     current.setAttribute(ERROR_MESSAGE, exception.getMessage());
                 }
+            }
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static class DoServiceAdvice {
+
+        @Advice.OnMethodEnter(suppress = Throwable.class)
+        public static void onEnter(@Advice.Argument(value = 0) HttpServletRequest request) {
+            Span current = Span.current();
+            if (Objects.nonNull(current)) {
+                current.updateName(request.getMethod() + " " + request.getRequestURI());
             }
         }
     }
