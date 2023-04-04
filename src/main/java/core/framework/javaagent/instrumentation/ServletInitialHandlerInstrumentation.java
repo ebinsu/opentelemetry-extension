@@ -39,12 +39,12 @@ public class ServletInitialHandlerInstrumentation implements TypeInstrumentation
 
         @Advice.OnMethodEnter(suppress = Throwable.class)
         public static void onEnter(@Advice.Argument(value = 0) HttpServerExchange exchange) {
-            Span current = Span.current();
-            current.setAttribute("test", "hahahah1");
-            if (Objects.nonNull(current)) {
-                current.setAttribute("test", "hahahah2");
-                current.updateName(exchange.getRequestMethod() + " " + exchange.getRequestURI());
-            }
+//            Span current = Span.current();
+//            current.setAttribute("test", "hahahah1");
+//            if (Objects.nonNull(current)) {
+//                current.setAttribute("test", "hahahah2");
+//                current.updateName(exchange.getRequestMethod() + " " + exchange.getRequestURI());
+//            }
         }
     }
 }
