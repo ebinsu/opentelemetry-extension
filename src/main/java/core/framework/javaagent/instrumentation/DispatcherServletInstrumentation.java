@@ -5,6 +5,7 @@
 
 package core.framework.javaagent.instrumentation;
 
+import core.framework.javaagent.HealthEndpointSampler;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
@@ -18,6 +19,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 import static net.bytebuddy.matcher.ElementMatchers.namedOneOf;
 
@@ -28,6 +30,7 @@ import static net.bytebuddy.matcher.ElementMatchers.namedOneOf;
  * @author ebin
  */
 public class DispatcherServletInstrumentation implements TypeInstrumentation {
+    private static final Logger logger = Logger.getLogger(DispatcherServletInstrumentation.class.getName());
     public static final String ERROR_CODE = "error_code";
     public static final String ERROR_MESSAGE = "error_message";
 
@@ -95,10 +98,11 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
 
         @Advice.OnMethodEnter(suppress = Throwable.class)
         public static void onEnter(@Advice.Argument(value = 0) HttpServletRequest request) {
-            Span current = Span.current();
-            if (Objects.nonNull(current)) {
-                current.updateName(request.getMethod() + " " + request.getRequestURI());
-            }
+            logger.warning("on enter do service");
+//            Span current = Span.current();
+//            if (Objects.nonNull(current)) {
+//                current.updateName(request.getMethod() + " " + request.getRequestURI());
+//            }
         }
     }
 }

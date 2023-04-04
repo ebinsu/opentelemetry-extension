@@ -11,6 +11,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 
 import java.util.Objects;
+import java.util.logging.Logger;
 
 import static net.bytebuddy.matcher.ElementMatchers.namedOneOf;
 
@@ -18,6 +19,8 @@ import static net.bytebuddy.matcher.ElementMatchers.namedOneOf;
  * @author ebin
  */
 public class ServletInitialHandlerInstrumentation implements TypeInstrumentation {
+    private static final Logger logger = Logger.getLogger(ServletInitialHandlerInstrumentation.class.getName());
+
     @Override
     public ElementMatcher<TypeDescription> typeMatcher() {
         return AgentElementMatchers.hasSuperType(
@@ -39,6 +42,7 @@ public class ServletInitialHandlerInstrumentation implements TypeInstrumentation
 
         @Advice.OnMethodEnter(suppress = Throwable.class)
         public static void onEnter(@Advice.Argument(value = 0) HttpServerExchange exchange) {
+            logger.warning("on enter  HandleRequest");
 //            Span current = Span.current();
 //            current.setAttribute("test", "hahahah1");
 //            if (Objects.nonNull(current)) {
