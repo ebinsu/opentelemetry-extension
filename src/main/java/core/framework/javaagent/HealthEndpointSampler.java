@@ -25,6 +25,12 @@ import java.util.List;
  * @see DemoAutoConfigurationCustomizerProvider
  */
 public class HealthEndpointSampler implements Sampler {
+    private String healthEndpoint;
+
+    public HealthEndpointSampler(String healthEndpoint) {
+        this.healthEndpoint = healthEndpoint;
+    }
+
     @Override
     public SamplingResult shouldSample(
             Context parentContext,
@@ -33,7 +39,7 @@ public class HealthEndpointSampler implements Sampler {
             SpanKind spanKind,
             Attributes attributes,
             List<LinkData> parentLinks) {
-        if (name.contains("health")) {
+        if (name.contains(healthEndpoint)) {
             return SamplingResult.create(SamplingDecision.DROP);
         } else {
             return SamplingResult.create(SamplingDecision.RECORD_AND_SAMPLE);

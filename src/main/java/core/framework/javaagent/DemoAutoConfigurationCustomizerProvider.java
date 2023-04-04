@@ -28,7 +28,11 @@ public class DemoAutoConfigurationCustomizerProvider
     @Override
     public void customize(AutoConfigurationCustomizer autoConfiguration) {
         autoConfiguration
-                .addPropertiesSupplier(this::getDefaultProperties);
+                .addPropertiesSupplier(this::getDefaultProperties)
+                .addSamplerCustomizer((sampler, configProperties) -> {
+                    String endpoint = configProperties.getString("otel.traces.sampler.health.endpoint", "xxx");
+                    return new HealthEndpointSampler(endpoint);
+                });
     }
 
     private Map<String, String> getDefaultProperties() {
