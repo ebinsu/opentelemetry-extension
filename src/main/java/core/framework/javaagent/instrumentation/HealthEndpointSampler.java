@@ -33,7 +33,7 @@ public class HealthEndpointSampler implements Sampler {
             SpanKind spanKind,
             Attributes attributes,
             List<LinkData> parentLinks) {
-        if (spanKind == SpanKind.INTERNAL && name.contains("greeting")) {
+        if (spanKind == SpanKind.INTERNAL && name.contains("/actuator/health")) {
             return SamplingResult.create(SamplingDecision.DROP);
         } else {
             return SamplingResult.create(SamplingDecision.RECORD_AND_SAMPLE);
