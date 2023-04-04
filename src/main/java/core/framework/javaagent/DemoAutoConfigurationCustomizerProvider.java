@@ -26,7 +26,7 @@ public class DemoAutoConfigurationCustomizerProvider
     public void customize(AutoConfigurationCustomizer autoConfiguration) {
         autoConfiguration
                 .addSamplerCustomizer((sampler, configProperties) -> {
-                    String endpoint = configProperties.getString("otel.traces.sampler.health.endpoint", "xxx");
+                    String endpoint = configProperties.getString("otel.traces.sampler.health.endpoint", "health");
                     return new HealthEndpointSampler(endpoint);
                 });
     }
