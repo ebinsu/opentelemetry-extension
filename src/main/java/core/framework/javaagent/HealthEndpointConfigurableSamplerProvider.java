@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package core.framework.javaagent.instrumentation;
+package core.framework.javaagent;
 
 import com.google.auto.service.AutoService;
 import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
@@ -20,6 +20,6 @@ public class HealthEndpointConfigurableSamplerProvider implements ConfigurableSa
 
     @Override
     public String getName() {
-        return "health-endpoint";
+        return "HealthEndpoint";
     }
 }
