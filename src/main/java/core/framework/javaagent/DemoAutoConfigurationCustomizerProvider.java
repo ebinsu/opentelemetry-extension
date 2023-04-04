@@ -9,9 +9,6 @@ import com.google.auto.service.AutoService;
 import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizer;
 import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizerProvider;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * This is one of the main entry points for Instrumentation Agent's customizations. It allows
  * configuring the {@link AutoConfigurationCustomizer}. See the {@link
@@ -28,16 +25,9 @@ public class DemoAutoConfigurationCustomizerProvider
     @Override
     public void customize(AutoConfigurationCustomizer autoConfiguration) {
         autoConfiguration
-                .addPropertiesSupplier(this::getDefaultProperties)
                 .addSamplerCustomizer((sampler, configProperties) -> {
                     String endpoint = configProperties.getString("otel.traces.sampler.health.endpoint", "xxx");
                     return new HealthEndpointSampler(endpoint);
                 });
-    }
-
-    private Map<String, String> getDefaultProperties() {
-        Map<String, String> properties = new HashMap<>();
-        properties.put("otel.traces.sampler", "HealthEndpoint");
-        return properties;
     }
 }
