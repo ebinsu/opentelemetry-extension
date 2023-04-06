@@ -111,6 +111,13 @@ dependencies {
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${versions.junit}")
   testRuntimeOnly("ch.qos.logback:logback-classic:1.4.6")
 
+  // https://mvnrepository.com/artifact/io.opentelemetry.javaagent/opentelemetry-testing-common
+  implementation group: 'io.opentelemetry.javaagent', name: 'opentelemetry-testing-common', version: '1.24.0-alpha'
+  // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '3.0.5'
+
+
+
   //Otel Java instrumentation that we use and extend during integration tests
   otel("io.opentelemetry.javaagent:opentelemetry-javaagent:${versions.opentelemetryJavaagent}")
 

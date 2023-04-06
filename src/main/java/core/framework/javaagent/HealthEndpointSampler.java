@@ -16,19 +16,18 @@ import io.opentelemetry.sdk.trace.samplers.SamplingDecision;
 import io.opentelemetry.sdk.trace.samplers.SamplingResult;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 /**
- * This demo sampler filters out all internal spans whose name contains string "greeting".
- *
  * <p>See <a
  * href="https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/sdk.md#sampling">
  * OpenTelemetry Specification</a> for more information about span sampling.
  *
- * @see DemoAutoConfigurationCustomizerProvider
+ * @see CoreFrameworkAutoConfigurationCustomizerProvider
  */
 public class HealthEndpointSampler implements Sampler {
-    private static final Logger logger = Logger.getLogger(HealthEndpointSampler.class.getName());
+    private final Logger logger = Logger.getLogger(HealthEndpointSampler.class.getName());
     private String healthEndpoint;
 
     public HealthEndpointSampler(String healthEndpoint) {
@@ -43,7 +42,10 @@ public class HealthEndpointSampler implements Sampler {
             SpanKind spanKind,
             Attributes attributes,
             List<LinkData> parentLinks) {
+        logger.warning("name: " + name);
         String attr = attributes.get(InternalAttributeKeyImpl.create("http.target", AttributeType.STRING));
+        String test = attributes.get(InternalAttributeKeyImpl.create("test", AttributeType.STRING));
+        logger.warning("test: " + test);
         if (name.contains(healthEndpoint)) {
             return SamplingResult.create(SamplingDecision.DROP);
         } else if (spanKind == SpanKind.INTERNAL && name.contains("OperationHandler.handle")) {

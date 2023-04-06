@@ -1,9 +1,12 @@
 package core.framework.javaagent.instrumentation;
 
+import io.opentelemetry.api.common.AttributeType;
+import io.opentelemetry.api.internal.InternalAttributeKeyImpl;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeTransformer;
 import io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers;
+import io.opentelemetry.sdk.trace.ReadableSpan;
 import io.undertow.server.HttpServerExchange;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
@@ -40,11 +43,10 @@ public class ServletInitialHandlerInstrumentation implements TypeInstrumentation
 
     public static class HandleRequestAdvice {
 
-        @Advice.OnMethodEnter(suppress = Throwable.class)
+        @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
         public static void onEnter(@Advice.Argument(value = 0) HttpServerExchange exchange) {
-            logger.warning("on enter  HandleRequest");
-//            Span current = Span.current();
-//            current.setAttribute("test", "hahahah1");
+            Span current = Span.current();
+            current.setAttribute(InternalAttributeKeyImpl.create("test", AttributeType.STRING), "hahahah1");
 //            if (Objects.nonNull(current)) {
 //                current.setAttribute("test", "hahahah2");
 //                current.updateName(exchange.getRequestMethod() + " " + exchange.getRequestURI());
