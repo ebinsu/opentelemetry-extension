@@ -45,7 +45,7 @@ repositories {
     }
     maven {
         name = "core-framework"
-        url = uri("https://ebinsu-maven.pkg.coding.net/repository/ebin-core/core-framework/")
+        url = uri("https://ebinsu-maven.pkg.coding.net/repository/ebin-core/core-framework")
     }
 }
 

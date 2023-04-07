@@ -75,6 +75,7 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
                 current.setAttribute("error.code", errorCode);
             } else {
                 current.setStatus(StatusCode.OK);
+                current.setAttribute("error.code", "OK");
             }
         }
     }
