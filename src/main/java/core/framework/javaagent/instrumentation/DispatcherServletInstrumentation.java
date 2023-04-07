@@ -5,9 +5,7 @@
 
 package core.framework.javaagent.instrumentation;
 
-import core.framework.exception.BaseRuntimeException;
 import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeTransformer;
 import io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers;
@@ -18,7 +16,6 @@ import net.bytebuddy.matcher.ElementMatchers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 import static net.bytebuddy.matcher.ElementMatchers.namedOneOf;
@@ -66,7 +63,7 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
                 @Advice.Argument(value = 1) HttpServletResponse httpServletResponse,
                 @Advice.Argument(value = 4) Exception exception) {
             Span current = Span.current();
-            if (Objects.nonNull(exception)) {
+            /*if (Objects.nonNull(exception)) {
                 String errorCode = "UNASSIGNED";
                 if (exception instanceof BaseRuntimeException) {
                     BaseRuntimeException e = (BaseRuntimeException) exception;
@@ -76,7 +73,7 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
             } else {
                 current.setStatus(StatusCode.OK);
                 current.setAttribute("error.code", "OK");
-            }
+            }*/
         }
     }
 }
