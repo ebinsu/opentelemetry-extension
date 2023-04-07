@@ -5,7 +5,7 @@
 
 package core.framework.javaagent.instrumentation;
 
-import core.framework.javaagent.HealthEndpointSampler;
+import core.framework.exception.BaseRuntimeException;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
@@ -24,15 +24,10 @@ import java.util.logging.Logger;
 import static net.bytebuddy.matcher.ElementMatchers.namedOneOf;
 
 /**
- * Change span name to request uri and span state to error.
- * Add error_code, error_message to attribute.
- *
  * @author ebin
  */
 public class DispatcherServletInstrumentation implements TypeInstrumentation {
     private static final Logger logger = Logger.getLogger(DispatcherServletInstrumentation.class.getName());
-    public static final String ERROR_CODE = "error_code";
-    public static final String ERROR_MESSAGE = "error_message";
 
     @Override
     public ElementMatcher<TypeDescription> typeMatcher() {
@@ -42,17 +37,6 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
 
     @Override
     public void transform(TypeTransformer typeTransformer) {
-        typeTransformer.applyAdviceToMethod(
-                namedOneOf("doService")
-                        .and(
-                                ElementMatchers.takesArgument(
-                                        0, ElementMatchers.named("javax.servlet.http.HttpServletRequest")))
-                        .and(
-                                ElementMatchers.takesArgument(
-                                        1, ElementMatchers.named("javax.servlet.http.HttpServletResponse")))
-                        .and(ElementMatchers.isProtected()),
-                this.getClass().getName() + "$DoServiceAdvice");
-
         typeTransformer.applyAdviceToMethod(
                 namedOneOf("processDispatchResult")
                         .and(
@@ -76,33 +60,22 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
     @SuppressWarnings("unused")
     public static class ProcessDispatchResultAdvice {
 
-        @Advice.OnMethodExit(suppress = Throwable.class)
-        public static void onExit(
+        @Advice.OnMethodEnter(suppress = Throwable.class)
+        public static void onEnter(
                 @Advice.Argument(value = 0) HttpServletRequest request,
                 @Advice.Argument(value = 1) HttpServletResponse httpServletResponse,
                 @Advice.Argument(value = 4) Exception exception) {
+            Span current = Span.current();
             if (Objects.nonNull(exception)) {
-                Span current = Span.current();
-                if (Objects.nonNull(current)) {
-                    String errorCode = httpServletResponse.getHeader(ERROR_CODE);
-                    current.setStatus(StatusCode.ERROR, exception.getMessage());
-                    current.setAttribute(ERROR_CODE, errorCode);
-                    current.setAttribute(ERROR_MESSAGE, exception.getMessage());
+                String errorCode = "UNASSIGNED";
+                if (exception instanceof BaseRuntimeException) {
+                    BaseRuntimeException e = (BaseRuntimeException) exception;
                 }
+                current.setStatus(StatusCode.ERROR, errorCode);
+                current.setAttribute("error.code", errorCode);
+            } else {
+                current.setStatus(StatusCode.OK);
             }
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public static class DoServiceAdvice {
-
-        @Advice.OnMethodEnter(suppress = Throwable.class)
-        public static void onEnter(@Advice.Argument(value = 0) HttpServletRequest request) {
-            logger.warning("on enter do service");
-//            Span current = Span.current();
-//            if (Objects.nonNull(current)) {
-//                current.updateName(request.getMethod() + " " + request.getRequestURI());
-//            }
         }
     }
 }
