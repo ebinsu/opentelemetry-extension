@@ -10,14 +10,15 @@ import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeTransformer;
 import io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import static net.bytebuddy.matcher.ElementMatchers.namedOneOf;
@@ -40,10 +41,10 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
                 namedOneOf("processDispatchResult")
                         .and(
                                 ElementMatchers.takesArgument(
-                                        0, ElementMatchers.named("javax.servlet.http.HttpServletRequest")))
+                                        0, ElementMatchers.named("jakarta.servlet.http.HttpServletRequest")))
                         .and(
                                 ElementMatchers.takesArgument(
-                                        1, ElementMatchers.named("javax.servlet.http.HttpServletResponse")))
+                                        1, ElementMatchers.named("jakarta.servlet.http.HttpServletResponse")))
                         .and(
                                 ElementMatchers.takesArgument(
                                         2,
@@ -59,16 +60,17 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
     @SuppressWarnings("unused")
     public static class ProcessDispatchResultAdvice {
 
-        @Advice.OnMethodEnter(suppress = Throwable.class)
-        public static void onEnter(
+        @Advice.OnMethodExit(suppress = Throwable.class)
+        public static void onExit(
                 @Advice.Argument(value = 0) HttpServletRequest request,
                 @Advice.Argument(value = 1) HttpServletResponse httpServletResponse,
                 @Advice.Argument(value = 4) Exception exception) {
             Span current = Span.current();
             if (Objects.nonNull(exception)) {
-                String errorCode = "UNASSIGNED";
-                current.setStatus(StatusCode.ERROR, errorCode);
-                current.setAttribute("error.code", errorCode);
+                String defaultErrorCode = "UNASSIGNED";
+                String errorCode = (String) request.getAttribute("core.framework.web.exception.DefaultHandlerExceptionResolver.ERROR.CODE");
+                current.setStatus(StatusCode.ERROR, Optional.ofNullable(errorCode).orElse(defaultErrorCode));
+                current.setAttribute("error.code", Optional.ofNullable(errorCode).orElse(defaultErrorCode));
             } else {
                 current.setStatus(StatusCode.OK);
                 current.setAttribute("error.code", "NONE");

@@ -5,7 +5,6 @@ import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeTransformer;
 import io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers;
 import io.undertow.security.idm.Account;
-import io.undertow.server.HttpServerExchange;
 import io.undertow.servlet.handlers.ServletRequestContext;
 import jakarta.servlet.http.HttpSession;
 import net.bytebuddy.asm.Advice;
@@ -32,14 +31,6 @@ public class ServletInitialHandlerInstrumentation implements TypeInstrumentation
     @Override
     public void transform(TypeTransformer transformer) {
         transformer.applyAdviceToMethod(
-                namedOneOf("handleRequest")
-                        .and(
-                                ElementMatchers.takesArgument(
-                                        0, ElementMatchers.named("io.undertow.server.HttpServerExchange")))
-                        .and(ElementMatchers.isPublic()),
-                this.getClass().getName() + "$HandleRequestAdvice");
-
-        transformer.applyAdviceToMethod(
                 namedOneOf("dispatchRequest")
                         .and(
                                 ElementMatchers.takesArgument(
@@ -57,16 +48,9 @@ public class ServletInitialHandlerInstrumentation implements TypeInstrumentation
                 this.getClass().getName() + "$HandleDispatchRequest");
     }
 
-    public static class HandleRequestAdvice {
-
-        @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
-        public static void onEnter(@Advice.Argument(value = 0) HttpServerExchange exchange) {
-        }
-    }
-
     public static class HandleDispatchRequest {
 
-        @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
+        @Advice.OnMethodEnter(suppress = Throwable.class)
         public static void onEnter(@Advice.Argument(value = 1) ServletRequestContext exchange) {
             Span current = Span.current();
             HttpSession session = exchange.getOriginalRequest().getSession(false);

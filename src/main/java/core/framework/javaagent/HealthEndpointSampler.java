@@ -16,7 +16,6 @@ import io.opentelemetry.sdk.trace.samplers.SamplingDecision;
 import io.opentelemetry.sdk.trace.samplers.SamplingResult;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 /**
