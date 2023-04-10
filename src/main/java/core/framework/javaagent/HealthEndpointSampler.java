@@ -42,10 +42,7 @@ public class HealthEndpointSampler implements Sampler {
             SpanKind spanKind,
             Attributes attributes,
             List<LinkData> parentLinks) {
-        logger.warning("name: " + name);
         String attr = attributes.get(InternalAttributeKeyImpl.create("http.target", AttributeType.STRING));
-        String test = attributes.get(InternalAttributeKeyImpl.create("test", AttributeType.STRING));
-        logger.warning("test: " + test);
         if (name.contains(healthEndpoint)) {
             return SamplingResult.create(SamplingDecision.DROP);
         } else if (spanKind == SpanKind.INTERNAL && name.contains("OperationHandler.handle")) {

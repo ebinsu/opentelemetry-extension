@@ -95,6 +95,7 @@ dependencies {
      */
     compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'
     compileOnly group: 'io.undertow', name: 'undertow-servlet', version: '2.3.0.Final'
+//    compileOnly group: 'core-framework', name: 'core-modules-exception', version: '1.0.26-SNAPSHOT'
 
     /*
     This dependency is required for DemoSpanProcessor both during compile and runtime.
@@ -102,6 +103,7 @@ dependencies {
     and added to the resulting jar for our extension's distribution.
      */
     implementation 'org.apache.commons:commons-lang3:3.12.0'
+//    implementation 'core-framework:core-modules-exception:1.0.26-SNAPSHOT'
 
     //All dependencies below are only for tests
     testImplementation("org.testcontainers:testcontainers:1.17.6")
@@ -114,12 +116,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:${versions.junit}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${versions.junit}")
     testRuntimeOnly("ch.qos.logback:logback-classic:1.4.6")
-
-    // https://mvnrepository.com/artifact/io.opentelemetry.javaagent/opentelemetry-testing-common
-    implementation group: 'io.opentelemetry.javaagent', name: 'opentelemetry-testing-common', version: '1.24.0-alpha'
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '3.0.5'
-
 
     //Otel Java instrumentation that we use and extend during integration tests
     otel("io.opentelemetry.javaagent:opentelemetry-javaagent:${versions.opentelemetryJavaagent}")
