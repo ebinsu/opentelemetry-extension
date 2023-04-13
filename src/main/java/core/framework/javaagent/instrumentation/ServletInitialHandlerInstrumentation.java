@@ -5,7 +5,10 @@ import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeTransformer;
 import io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers;
 import io.undertow.security.idm.Account;
+import io.undertow.server.HttpServerExchange;
 import io.undertow.servlet.handlers.ServletRequestContext;
+import io.undertow.servlet.spec.HttpServletRequestImpl;
+import io.undertow.util.Headers;
 import jakarta.servlet.http.HttpSession;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
@@ -51,9 +54,17 @@ public class ServletInitialHandlerInstrumentation implements TypeInstrumentation
     public static class HandleDispatchRequest {
 
         @Advice.OnMethodEnter(suppress = Throwable.class)
-        public static void onEnter(@Advice.Argument(value = 1) ServletRequestContext exchange) {
+        public static void onEnter(@Advice.Argument(value = 0) HttpServerExchange exchange, @Advice.Argument(value = 1) ServletRequestContext context) {
             Span current = Span.current();
-            HttpSession session = exchange.getOriginalRequest().getSession(false);
+            HttpServletRequestImpl request = context.getOriginalRequest();
+            // host name
+            String host = exchange.getHostName();
+            if (host == null) {
+                host = request.getHeader((Headers.X_FORWARDED_HOST));
+            }
+            current.setAttribute("host", host);
+            // principal id
+            HttpSession session = request.getSession(false);
             if (session != null) {
                 Account account = (Account) session.getAttribute("undertow_account");
                 current.setAttribute("principal.id", account.getPrincipal().getName());

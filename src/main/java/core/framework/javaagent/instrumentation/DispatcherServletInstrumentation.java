@@ -69,8 +69,12 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
             if (Objects.nonNull(exception)) {
                 String defaultErrorCode = "UNASSIGNED";
                 String errorCode = (String) request.getAttribute("core.framework.web.exception.DefaultHandlerExceptionResolver.ERROR.CODE");
+                String errorMessage = (String) request.getAttribute("core.framework.web.exception.DefaultHandlerExceptionResolver.ERROR.MESSAGE");
                 current.setStatus(StatusCode.ERROR, Optional.ofNullable(errorCode).orElse(defaultErrorCode));
                 current.setAttribute("error.code", Optional.ofNullable(errorCode).orElse(defaultErrorCode));
+                if (errorMessage != null) {
+                    current.setAttribute("error.message", errorMessage);
+                }
             } else {
                 current.setStatus(StatusCode.OK);
                 current.setAttribute("error.code", "NONE");
