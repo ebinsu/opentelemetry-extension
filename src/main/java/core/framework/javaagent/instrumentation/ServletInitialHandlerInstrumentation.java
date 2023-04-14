@@ -8,7 +8,6 @@ import io.undertow.security.idm.Account;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.servlet.handlers.ServletRequestContext;
 import io.undertow.servlet.spec.HttpServletRequestImpl;
-import io.undertow.util.Headers;
 import jakarta.servlet.http.HttpSession;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
@@ -57,12 +56,6 @@ public class ServletInitialHandlerInstrumentation implements TypeInstrumentation
         public static void onEnter(@Advice.Argument(value = 0) HttpServerExchange exchange, @Advice.Argument(value = 1) ServletRequestContext context) {
             Span current = Span.current();
             HttpServletRequestImpl request = context.getOriginalRequest();
-            // host name
-            String host = exchange.getHostName();
-            if (host == null) {
-                host = request.getHeader((Headers.X_FORWARDED_HOST));
-            }
-            current.setAttribute("host", host);
             // principal id
             HttpSession session = request.getSession(false);
             if (session != null) {
