@@ -1,15 +1,15 @@
 # Extensions
 
 ## Introduction
-1. undertow
+- undertow
 
 方法dispatchRequest 进入前，记录当前登录账号的id（principal.id ）。
 
-2. spring mvc - dispatch-servlet
+- spring mvc - dispatch-servlet
 
 方法processDispatchResult 执行后，如果有发生异常，记录异常的异常码、异常消息（error.code,error.message）。
 
-3. health check endpoint sampler
+- health check endpoint sampler
 
 通过配置项：OTEL.TRACES.SAMPLER.HEALTH.ENDPOINT ，来过滤健康检测端口。
 
