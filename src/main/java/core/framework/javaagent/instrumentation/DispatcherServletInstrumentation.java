@@ -32,29 +32,29 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
     @Override
     public ElementMatcher<TypeDescription> typeMatcher() {
         return AgentElementMatchers.hasSuperType(
-                namedOneOf("org.springframework.web.servlet.DispatcherServlet"));
+            namedOneOf("org.springframework.web.servlet.DispatcherServlet"));
     }
 
     @Override
     public void transform(TypeTransformer typeTransformer) {
         typeTransformer.applyAdviceToMethod(
-                namedOneOf("processDispatchResult")
-                        .and(
-                                ElementMatchers.takesArgument(
-                                        0, ElementMatchers.named("jakarta.servlet.http.HttpServletRequest")))
-                        .and(
-                                ElementMatchers.takesArgument(
-                                        1, ElementMatchers.named("jakarta.servlet.http.HttpServletResponse")))
-                        .and(
-                                ElementMatchers.takesArgument(
-                                        2,
-                                        ElementMatchers.named("org.springframework.web.servlet.HandlerExecutionChain")))
-                        .and(
-                                ElementMatchers.takesArgument(
-                                        3, ElementMatchers.named("org.springframework.web.servlet.ModelAndView")))
-                        .and(ElementMatchers.takesArgument(4, ElementMatchers.named("java.lang.Exception")))
-                        .and(ElementMatchers.isPrivate()),
-                this.getClass().getName() + "$ProcessDispatchResultAdvice");
+            namedOneOf("processDispatchResult")
+                .and(
+                    ElementMatchers.takesArgument(
+                        0, ElementMatchers.named("jakarta.servlet.http.HttpServletRequest")))
+                .and(
+                    ElementMatchers.takesArgument(
+                        1, ElementMatchers.named("jakarta.servlet.http.HttpServletResponse")))
+                .and(
+                    ElementMatchers.takesArgument(
+                        2,
+                        ElementMatchers.named("org.springframework.web.servlet.HandlerExecutionChain")))
+                .and(
+                    ElementMatchers.takesArgument(
+                        3, ElementMatchers.named("org.springframework.web.servlet.ModelAndView")))
+                .and(ElementMatchers.takesArgument(4, ElementMatchers.named("java.lang.Exception")))
+                .and(ElementMatchers.isPrivate()),
+            this.getClass().getName() + "$ProcessDispatchResultAdvice");
     }
 
     @SuppressWarnings("unused")
@@ -62,9 +62,9 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
 
         @Advice.OnMethodExit(suppress = Throwable.class)
         public static void onExit(
-                @Advice.Argument(value = 0) HttpServletRequest request,
-                @Advice.Argument(value = 1) HttpServletResponse httpServletResponse,
-                @Advice.Argument(value = 4) Exception exception) {
+            @Advice.Argument(value = 0) HttpServletRequest request,
+            @Advice.Argument(value = 1) HttpServletResponse httpServletResponse,
+            @Advice.Argument(value = 4) Exception exception) {
             Span current = Span.current();
             if (Objects.nonNull(exception)) {
                 String defaultErrorCode = "UNASSIGNED";
@@ -75,9 +75,6 @@ public class DispatcherServletInstrumentation implements TypeInstrumentation {
                 if (errorMessage != null) {
                     current.setAttribute("error.message", errorMessage);
                 }
-            } else {
-                current.setStatus(StatusCode.OK);
-                current.setAttribute("error.code", "NONE");
             }
         }
     }

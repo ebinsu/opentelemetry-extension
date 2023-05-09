@@ -8,6 +8,8 @@ package core.framework.javaagent;
 import com.google.auto.service.AutoService;
 import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizer;
 import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizerProvider;
+import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
+import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 
 /**
  * This is one of the main entry points for Instrumentation Agent's customizations. It allows
@@ -20,14 +22,21 @@ import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizerProvide
  */
 @AutoService(AutoConfigurationCustomizerProvider.class)
 public class CoreFrameworkAutoConfigurationCustomizerProvider
-        implements AutoConfigurationCustomizerProvider {
+    implements AutoConfigurationCustomizerProvider {
 
     @Override
     public void customize(AutoConfigurationCustomizer autoConfiguration) {
         autoConfiguration
-                .addSamplerCustomizer((sampler, configProperties) -> {
-                    String endpoint = configProperties.getString("otel.traces.sampler.health.endpoint", "health");
-                    return new HealthEndpointSampler(endpoint);
-                });
+            .addSamplerCustomizer((sampler, configProperties) -> {
+                String endpoint = configProperties.getString("otel.traces.sampler.health.endpoint", "health");
+                return new HealthEndpointSampler(endpoint);
+            })
+            .addTracerProviderCustomizer(this::configureSdkTracerProvider);
+    }
+
+    private SdkTracerProviderBuilder configureSdkTracerProvider(
+        SdkTracerProviderBuilder tracerProvider, ConfigProperties config) {
+        return tracerProvider
+            .addSpanProcessor(new DefaultErrorCodeSpanProcessor());
     }
 }
