@@ -14,6 +14,7 @@ import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Marker;
 
 import java.util.Objects;
@@ -34,7 +35,7 @@ public class LoggerInstrumentation implements TypeInstrumentation {
     @Override
     public void transform(TypeTransformer typeTransformer) {
         typeTransformer.applyAdviceToMethod(
-            nameMatches("warn")
+            nameMatches("(warn|error)")
                 .and(
                     ElementMatchers.takesArgument(
                         0, ElementMatchers.named("org.slf4j.Marker")))
@@ -42,19 +43,39 @@ public class LoggerInstrumentation implements TypeInstrumentation {
                     ElementMatchers.takesArgument(
                         1, ElementMatchers.named("java.lang.String")))
                 .and(ElementMatchers.isPublic()),
-            this.getClass().getName() + "$ProcessLogWarnAdvice");
+            this.getClass().getName() + "$ProcessLogWithMarkerAdvice");
+
+        typeTransformer.applyAdviceToMethod(
+            nameMatches("(warn|error)")
+                .and(
+                    ElementMatchers.takesArgument(
+                        0, ElementMatchers.named("java.lang.String")))
+                .and(ElementMatchers.isPublic()),
+            this.getClass().getName() + "$ProcessLogWithoutMarkerAdvice");
     }
 
     @SuppressWarnings("unused")
-    public static class ProcessLogWarnAdvice {
+    public static class ProcessLogWithMarkerAdvice {
 
         @Advice.OnMethodEnter(suppress = Throwable.class)
         public static void onEnter(@Advice.Argument(value = 0) Marker marker) {
             Span current = Span.current();
             if (Objects.nonNull(marker)) {
-                current.setStatus(StatusCode.ERROR, marker.getName());
-                current.setAttribute("error.code", marker.getName());
+                String errorCode = StringUtils.isEmpty(marker.getName()) ? "UNASSIGNED" : marker.getName();
+                current.setStatus(StatusCode.ERROR, errorCode);
+                current.setAttribute("error.code", errorCode);
             }
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static class ProcessLogWithoutMarkerAdvice {
+
+        @Advice.OnMethodEnter(suppress = Throwable.class)
+        public static void onEnter() {
+            Span current = Span.current();
+            current.setStatus(StatusCode.ERROR, "UNASSIGNED");
+            current.setAttribute("error.code", "UNASSIGNED");
         }
     }
 }
