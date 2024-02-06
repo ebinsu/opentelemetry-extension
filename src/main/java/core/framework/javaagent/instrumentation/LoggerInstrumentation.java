@@ -55,7 +55,7 @@ public class LoggerInstrumentation implements TypeInstrumentation {
     }
 
     @SuppressWarnings("unused")
-    public static class ProcessLogWithMarkerAdvice {
+    public static class ProcessLogWarnAdvice {
 
         @Advice.OnMethodEnter(suppress = Throwable.class)
         public static void onEnter(@Advice.Argument(value = 0) Marker marker) {
