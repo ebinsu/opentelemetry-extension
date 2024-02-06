@@ -43,7 +43,7 @@ public class LoggerInstrumentation implements TypeInstrumentation {
                     ElementMatchers.takesArgument(
                         1, ElementMatchers.named("java.lang.String")))
                 .and(ElementMatchers.isPublic()),
-            this.getClass().getName() + "$ProcessLogWithMarkerAdvice");
+            this.getClass().getName() + "$ProcessLogWarnAdvice");
 
         typeTransformer.applyAdviceToMethod(
             nameMatches("(warn|error)")
@@ -51,7 +51,7 @@ public class LoggerInstrumentation implements TypeInstrumentation {
                     ElementMatchers.takesArgument(
                         0, ElementMatchers.named("java.lang.String")))
                 .and(ElementMatchers.isPublic()),
-            this.getClass().getName() + "$ProcessLogWithoutMarkerAdvice");
+            this.getClass().getName() + "$ProcessLogWarnAdvice");
     }
 
     @SuppressWarnings("unused")
@@ -65,17 +65,6 @@ public class LoggerInstrumentation implements TypeInstrumentation {
                 current.setStatus(StatusCode.ERROR, errorCode);
                 current.setAttribute("error.code", errorCode);
             }
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public static class ProcessLogWithoutMarkerAdvice {
-
-        @Advice.OnMethodEnter(suppress = Throwable.class)
-        public static void onEnter() {
-            Span current = Span.current();
-            current.setStatus(StatusCode.ERROR, "UNASSIGNED");
-            current.setAttribute("error.code", "UNASSIGNED");
         }
     }
 }
