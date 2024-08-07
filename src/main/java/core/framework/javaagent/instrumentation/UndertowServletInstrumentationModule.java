@@ -19,9 +19,9 @@ import static java.util.Collections.singletonList;
  * @author ebin
  */
 @AutoService(InstrumentationModule.class)
-public final class ServletInitialHandlerInstrumentationModule extends InstrumentationModule {
-    public ServletInitialHandlerInstrumentationModule() {
-        super("servlet-initial-handler", "handle-request");
+public final class UndertowServletInstrumentationModule extends InstrumentationModule {
+    public UndertowServletInstrumentationModule() {
+        super("undertow-servlet", "handle-request");
     }
 
     @Override
@@ -37,6 +37,6 @@ public final class ServletInitialHandlerInstrumentationModule extends Instrument
 
     @Override
     public List<TypeInstrumentation> typeInstrumentations() {
-        return singletonList(new ServletInitialHandlerInstrumentation());
+        return singletonList(new UndertowServletInstrumentation());
     }
 }

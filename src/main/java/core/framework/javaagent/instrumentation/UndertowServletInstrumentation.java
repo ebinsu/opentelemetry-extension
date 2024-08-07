@@ -19,37 +19,38 @@ import static net.bytebuddy.matcher.ElementMatchers.namedOneOf;
 /**
  * @author ebin
  */
-public class ServletInitialHandlerInstrumentation implements TypeInstrumentation {
+public class UndertowServletInstrumentation implements TypeInstrumentation {
     @Override
     public ElementMatcher<TypeDescription> typeMatcher() {
         return AgentElementMatchers.hasSuperType(
-                namedOneOf("io.undertow.servlet.handlers.ServletInitialHandler"));
+            namedOneOf("io.undertow.servlet.handlers.ServletInitialHandler"));
     }
 
     @Override
     public void transform(TypeTransformer transformer) {
         transformer.applyAdviceToMethod(
-                namedOneOf("dispatchRequest")
-                        .and(
-                                ElementMatchers.takesArgument(
-                                        0, ElementMatchers.named("io.undertow.server.HttpServerExchange")))
-                        .and(
-                                ElementMatchers.takesArgument(
-                                        1, ElementMatchers.named("io.undertow.servlet.handlers.ServletRequestContext")))
-                        .and(
-                                ElementMatchers.takesArgument(
-                                        2, ElementMatchers.named("io.undertow.servlet.handlers.ServletChain")))
-                        .and(
-                                ElementMatchers.takesArgument(
-                                        3, ElementMatchers.named("jakarta.servlet.DispatcherType")))
-                        .and(ElementMatchers.isPrivate()),
-                this.getClass().getName() + "$HandleDispatchRequest");
+            namedOneOf("dispatchRequest")
+                .and(
+                    ElementMatchers.takesArgument(0, ElementMatchers.named("io.undertow.server.HttpServerExchange"))
+                )
+                .and(
+                    ElementMatchers.takesArgument(1, ElementMatchers.named("io.undertow.servlet.handlers.ServletRequestContext"))
+                )
+                .and(
+                    ElementMatchers.takesArgument(2, ElementMatchers.named("io.undertow.servlet.handlers.ServletChain"))
+                )
+                .and(
+                    ElementMatchers.takesArgument(3, ElementMatchers.named("jakarta.servlet.DispatcherType"))
+                )
+                .and(ElementMatchers.isPrivate()),
+            this.getClass().getName() + "$HandleDispatchRequest");
     }
 
     public static class HandleDispatchRequest {
 
         @Advice.OnMethodEnter(suppress = Throwable.class)
-        public static void onEnter(@Advice.Argument(value = 0) HttpServerExchange exchange, @Advice.Argument(value = 1) ServletRequestContext context) {
+        public static void onEnter(@Advice.Argument(value = 0) HttpServerExchange exchange,
+                                   @Advice.Argument(value = 1) ServletRequestContext context) {
             Span current = Span.current();
             HttpServletRequestImpl request = context.getOriginalRequest();
             // principal id
