@@ -16,7 +16,6 @@ import io.opentelemetry.sdk.trace.samplers.SamplingDecision;
 import io.opentelemetry.sdk.trace.samplers.SamplingResult;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * <p>See <a
@@ -26,7 +25,6 @@ import java.util.logging.Logger;
  * @see CoreFrameworkAutoConfigurationCustomizerProvider
  */
 public class HealthEndpointSampler implements Sampler {
-    private final Logger logger = Logger.getLogger(HealthEndpointSampler.class.getName());
     private String healthEndpoint;
 
     public HealthEndpointSampler(String healthEndpoint) {
@@ -35,12 +33,12 @@ public class HealthEndpointSampler implements Sampler {
 
     @Override
     public SamplingResult shouldSample(
-            Context parentContext,
-            String traceId,
-            String name,
-            SpanKind spanKind,
-            Attributes attributes,
-            List<LinkData> parentLinks) {
+        Context parentContext,
+        String traceId,
+        String name,
+        SpanKind spanKind,
+        Attributes attributes,
+        List<LinkData> parentLinks) {
         String attr = attributes.get(InternalAttributeKeyImpl.create("http.target", AttributeType.STRING));
         if (name.contains(healthEndpoint)) {
             return SamplingResult.create(SamplingDecision.DROP);

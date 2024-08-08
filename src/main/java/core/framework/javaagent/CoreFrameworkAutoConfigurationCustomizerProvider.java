@@ -21,8 +21,7 @@ import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
  * @see AutoConfigurationCustomizerProvider
  */
 @AutoService(AutoConfigurationCustomizerProvider.class)
-public class CoreFrameworkAutoConfigurationCustomizerProvider
-    implements AutoConfigurationCustomizerProvider {
+public class CoreFrameworkAutoConfigurationCustomizerProvider implements AutoConfigurationCustomizerProvider {
 
     @Override
     public void customize(AutoConfigurationCustomizer autoConfiguration) {
@@ -36,7 +35,6 @@ public class CoreFrameworkAutoConfigurationCustomizerProvider
 
     private SdkTracerProviderBuilder configureSdkTracerProvider(
         SdkTracerProviderBuilder tracerProvider, ConfigProperties config) {
-        return tracerProvider
-            .addSpanProcessor(new DefaultErrorCodeSpanProcessor());
+        return tracerProvider.addSpanProcessor(new DefaultErrorCodeSpanProcessor());
     }
 }
