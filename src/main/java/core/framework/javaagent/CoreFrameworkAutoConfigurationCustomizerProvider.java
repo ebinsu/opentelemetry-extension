@@ -35,6 +35,6 @@ public class CoreFrameworkAutoConfigurationCustomizerProvider implements AutoCon
 
     private SdkTracerProviderBuilder configureSdkTracerProvider(
         SdkTracerProviderBuilder tracerProvider, ConfigProperties config) {
-        return tracerProvider.addSpanProcessor(new DefaultErrorCodeSpanProcessor());
+        return tracerProvider.addSpanProcessor(new DefaultAttributeSpanProcessor());
     }
 }

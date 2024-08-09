@@ -6,6 +6,7 @@
 package core.framework.javaagent.instrumentation;
 
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.javaagent.bootstrap.Java8BytecodeBridge;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeTransformer;
 import io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers;
@@ -16,9 +17,6 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.slf4j.Marker;
 import org.slf4j.event.Level;
 import org.slf4j.helpers.MessageFormatter;
-
-import java.lang.reflect.Method;
-import java.util.Optional;
 
 import static net.bytebuddy.matcher.ElementMatchers.nameMatches;
 import static net.bytebuddy.matcher.ElementMatchers.namedOneOf;
@@ -58,11 +56,11 @@ public class LoggerInstrumentation implements TypeInstrumentation {
     @SuppressWarnings("unused")
     public static class ProcessWithOutMarker {
         @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
-        public static void onEnter(@Advice.Origin Method method,
+        public static void onEnter(@Advice.Origin("#m") String methodName,
                                    @Advice.AllArguments Object[] args) {
-            Span span = Span.current();
+            Span span = Java8BytecodeBridge.currentSpan();
             if (span != null) {
-                Level level = "error".equals(method.getName()) ? Level.ERROR : Level.WARN;
+                Level level = "error".equals(methodName) ? Level.ERROR : Level.WARN;
 
                 String errorMessage;
                 if (args.length == 1) {
@@ -84,7 +82,7 @@ public class LoggerInstrumentation implements TypeInstrumentation {
                     // void warn(String var1, Object var2, Object var3);
                     errorMessage = MessageFormatter.format((String) args[0], args[1], args[2]).getMessage();
                 } else {
-                    errorMessage = "Uncaught method : " + method;
+                    errorMessage = "Uncaught method : " + methodName;
                 }
 
                 span.setAttribute("error.code", "UNASSIGNED");
@@ -97,16 +95,20 @@ public class LoggerInstrumentation implements TypeInstrumentation {
     @SuppressWarnings("unused")
     public static class ProcessWithMarker {
         @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
-        public static void onEnter(@Advice.Origin Method method,
+        public static void onEnter(@Advice.Origin("#m") String methodName,
                                    @Advice.AllArguments Object[] args) {
-            Span span = Span.current();
+            Span span = Java8BytecodeBridge.currentSpan();
             if (span != null) {
-                Level level = "error".equals(method.getName()) ? Level.ERROR : Level.WARN;
+                Level level = "error".equals(methodName) ? Level.ERROR : Level.WARN;
 
                 Marker marker = (Marker) args[0];
-                String errorCode = Optional.ofNullable(marker)
-                    .flatMap(m -> Optional.ofNullable(m.getName()))
-                    .orElse("UNASSIGNED");
+                String errorCode = null;
+                if (marker != null) {
+                    errorCode = marker.getName();
+                }
+                if (errorCode == null || errorCode.isEmpty()) {
+                    errorCode = "UNASSIGNED";
+                }
 
                 String errorMessage;
                 if (args.length == 2) {
@@ -128,7 +130,7 @@ public class LoggerInstrumentation implements TypeInstrumentation {
                     // void warn(Marker var1, String var2, Object var3, Object var4);
                     errorMessage = MessageFormatter.format((String) args[1], args[2], args[3]).getMessage();
                 } else {
-                    errorMessage = "Uncaught method : " + method;
+                    errorMessage = "Uncaught method : " + methodName;
                 }
 
                 span.setAttribute("error.code", errorCode);

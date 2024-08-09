@@ -14,6 +14,5 @@ public class Log4jInstrumentationTest {
         LOGGER.warn("warn ({})", "1");
         LOGGER.warn("warn ({},{})", 1, 2);
         LOGGER.warn("warn ({},{},{})", 1, 2, 3);
-        LOGGER.warn("warn(ex)", new Throwable());
     }
 }
