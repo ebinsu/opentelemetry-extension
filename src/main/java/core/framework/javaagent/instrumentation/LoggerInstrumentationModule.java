@@ -26,7 +26,7 @@ public class LoggerInstrumentationModule extends InstrumentationModule {
 
     @Override
     public ElementMatcher.Junction<ClassLoader> classLoaderMatcher() {
-        return AgentElementMatchers.hasClassesNamed("org.slf4j.Logger");
+        return AgentElementMatchers.hasClassesNamed("org.slf4j.Logger", "org.slf4j.MDC");
     }
 
     @Override

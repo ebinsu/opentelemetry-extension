@@ -12,7 +12,7 @@ public class Log4jInstrumentationTest {
     public static void main(String[] args) {
         LOGGER.warn("warn()");
         LOGGER.warn("warn ({})", "1");
-        LOGGER.warn("warn ({},{})", 1, 2);
+        LOGGER.error("warn ({},{})", 1, 2);
         LOGGER.warn("warn ({},{},{})", 1, 2, 3);
     }
 }

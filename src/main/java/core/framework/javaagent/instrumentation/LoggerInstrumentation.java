@@ -6,7 +6,7 @@
 package core.framework.javaagent.instrumentation;
 
 import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.javaagent.bootstrap.Java8BytecodeBridge;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeTransformer;
 import io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers;
@@ -14,6 +14,7 @@ import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.slf4j.MDC;
 import org.slf4j.Marker;
 import org.slf4j.event.Level;
 import org.slf4j.helpers.MessageFormatter;
@@ -38,9 +39,6 @@ public class LoggerInstrumentation implements TypeInstrumentation {
                 .and(
                     ElementMatchers.takesArgument(0, ElementMatchers.named("org.slf4j.Marker"))
                 )
-                .and(
-                    ElementMatchers.takesArgument(1, ElementMatchers.named("java.lang.String"))
-                )
                 .and(ElementMatchers.isPublic()),
             this.getClass().getName() + "$ProcessWithMarker");
 
@@ -55,12 +53,27 @@ public class LoggerInstrumentation implements TypeInstrumentation {
 
     @SuppressWarnings("unused")
     public static class ProcessWithOutMarker {
-        @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
+        @Advice.OnMethodEnter(suppress = Throwable.class)
         public static void onEnter(@Advice.Origin("#m") String methodName,
                                    @Advice.AllArguments Object[] args) {
-            Span span = Java8BytecodeBridge.currentSpan();
+            Span span = Span.current();
             if (span != null) {
                 Level level = "error".equals(methodName) ? Level.ERROR : Level.WARN;
+
+                // only update errorCode/message if level raised, so errorCode will be first WARN or ERROR
+                boolean updateError;
+                String preLevelStr = MDC.get("otel.slf4j.instrumentation.error.level");
+                if (preLevelStr == null) {
+                    MDC.put("otel.slf4j.instrumentation.error.level", level.toString());
+                    updateError = true;
+                } else {
+                    Level preLevel = Level.valueOf(preLevelStr);
+                    updateError = level.toInt() > preLevel.toInt();
+                }
+
+                if (!updateError) {
+                    return;
+                }
 
                 String errorMessage;
                 if (args.length == 1) {
@@ -85,6 +98,7 @@ public class LoggerInstrumentation implements TypeInstrumentation {
                     errorMessage = "Uncaught method : " + methodName;
                 }
 
+                span.setStatus(StatusCode.ERROR, "UNASSIGNED");
                 span.setAttribute("error.code", "UNASSIGNED");
                 span.setAttribute("error.message", errorMessage);
                 span.setAttribute("error.level", level.toString());
@@ -94,12 +108,27 @@ public class LoggerInstrumentation implements TypeInstrumentation {
 
     @SuppressWarnings("unused")
     public static class ProcessWithMarker {
-        @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
+        @Advice.OnMethodEnter(suppress = Throwable.class)
         public static void onEnter(@Advice.Origin("#m") String methodName,
                                    @Advice.AllArguments Object[] args) {
-            Span span = Java8BytecodeBridge.currentSpan();
+            Span span = Span.current();
             if (span != null) {
                 Level level = "error".equals(methodName) ? Level.ERROR : Level.WARN;
+
+                // only update errorCode/message if level raised, so errorCode will be first WARN or ERROR
+                boolean updateError;
+                String preLevelStr = MDC.get("otel.slf4j.instrumentation.error.level");
+                if (preLevelStr == null) {
+                    MDC.put("otel.slf4j.instrumentation.error.level", level.toString());
+                    updateError = true;
+                } else {
+                    Level preLevel = Level.valueOf(preLevelStr);
+                    updateError = level.toInt() > preLevel.toInt();
+                }
+
+                if (!updateError) {
+                    return;
+                }
 
                 Marker marker = (Marker) args[0];
                 String errorCode = null;
@@ -133,6 +162,7 @@ public class LoggerInstrumentation implements TypeInstrumentation {
                     errorMessage = "Uncaught method : " + methodName;
                 }
 
+                span.setStatus(StatusCode.ERROR, errorCode);
                 span.setAttribute("error.code", errorCode);
                 span.setAttribute("error.message", errorMessage);
                 span.setAttribute("error.level", level.toString());
