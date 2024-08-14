@@ -19,18 +19,18 @@ import static java.util.Collections.singletonList;
  * @author ebin
  */
 @AutoService(InstrumentationModule.class)
-public class LoggerInstrumentationModule extends InstrumentationModule {
-    public LoggerInstrumentationModule() {
-        super("logger", "logger-warn");
+public class LogbackSpanAttributeInstrumentationModule extends InstrumentationModule {
+    public LogbackSpanAttributeInstrumentationModule() {
+        super("logback-span-attr", "logback-span-attr-1.0");
     }
 
     @Override
     public ElementMatcher.Junction<ClassLoader> classLoaderMatcher() {
-        return AgentElementMatchers.hasClassesNamed("org.slf4j.Logger", "org.slf4j.MDC");
+        return AgentElementMatchers.hasClassesNamed("ch.qos.logback.classic.Logger", "org.slf4j.MDC");
     }
 
     @Override
     public List<TypeInstrumentation> typeInstrumentations() {
-        return singletonList(new LoggerInstrumentation());
+        return singletonList(new LogbackSpanAttributeInstrumentation());
     }
 }

@@ -26,7 +26,7 @@ ext {
             opentelemetrySdk           : "1.40.0",
 
             // these lines are managed by .github/scripts/update-version.sh
-            opentelemetryJavaagent     : "2.7.0-SNAPSHOT",
+            opentelemetryJavaagent     : "2.6.0",
             opentelemetryJavaagentAlpha: "2.7.0-alpha-SNAPSHOT",
 
             junit                      : "5.10.3"
@@ -72,7 +72,6 @@ dependencies {
     // these serve as a test of the instrumentation boms
     implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:${versions.opentelemetryJavaagent}"))
     implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha:${versions.opentelemetryJavaagentAlpha}"))
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.14'
     /*
     Interfaces and SPIs that we implement. We use `compileOnly` dependency because during
     runtime all necessary classes are provided by javaagent itself.
@@ -81,11 +80,14 @@ dependencies {
     compileOnly("io.opentelemetry.instrumentation:opentelemetry-instrumentation-api")
     compileOnly("io.opentelemetry.javaagent:opentelemetry-javaagent-extension-api")
 
+
     //Provides @AutoService annotation that makes registration of our SPI implementations much easier
     compileOnly deps.autoservice
     annotationProcessor deps.autoservice
 
     compileOnly group: 'io.undertow', name: 'undertow-servlet', version: '2.3.0.Final'
+    compileOnly group: 'org.slf4j', name: 'slf4j-api', version: '2.0.14'
+    compileOnly("ch.qos.logback:logback-classic:1.5.6")
 
     //All dependencies below are only for tests
     testImplementation("org.testcontainers:testcontainers:1.20.1")
