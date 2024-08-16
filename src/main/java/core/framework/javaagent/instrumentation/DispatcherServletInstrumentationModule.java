@@ -15,13 +15,11 @@ import java.util.List;
 
 import static java.util.Collections.singletonList;
 
-/**
- * @author ebin
- */
+/** @author ebin */
 @AutoService(InstrumentationModule.class)
-public final class UndertowServletInstrumentationModule extends InstrumentationModule {
-    public UndertowServletInstrumentationModule() {
-        super("undertow-servlet", "handle-request");
+public final class DispatcherServletInstrumentationModule extends InstrumentationModule {
+    public DispatcherServletInstrumentationModule() {
+        super("spring-dispatcher-servlet", "process-dispatch");
     }
 
     @Override
@@ -32,11 +30,11 @@ public final class UndertowServletInstrumentationModule extends InstrumentationM
     @Override
     public ElementMatcher.Junction<ClassLoader> classLoaderMatcher() {
         return AgentElementMatchers.hasClassesNamed(
-                "io.undertow.servlet.handlers.ServletInitialHandler");
+            "org.springframework.web.servlet.DispatcherServlet");
     }
 
     @Override
     public List<TypeInstrumentation> typeInstrumentations() {
-        return singletonList(new UndertowServletInstrumentation());
+        return singletonList(new DispatcherServletInstrumentation());
     }
 }
