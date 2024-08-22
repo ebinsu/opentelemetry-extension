@@ -46,7 +46,22 @@ public class LogbackSpanAttributeInstrumentation implements TypeInstrumentation 
         @Advice.OnMethodEnter(suppress = Throwable.class)
         public static void methodEnter(@Advice.Argument(0) ILoggingEvent event) {
             Level level = event.getLevel();
-            if (Level.WARN == level || Level.ERROR == level) {
+            if (Level.INFO == level) {
+                List<Marker> markerList = event.getMarkerList();
+                if (markerList != null && !markerList.isEmpty()) {
+                    boolean record = "log-attribute".equals(markerList.get(0).getName());
+                    if (record) {
+                        Span span = Span.current();
+                        if (span != null) {
+                            String formattedMessage = event.getFormattedMessage();
+                            String[] split = formattedMessage.split("=");
+                            if (split.length == 2) {
+                                span.setAttribute(split[0].trim(), split[1].trim());
+                            }
+                        }
+                    }
+                }
+            } else if (Level.WARN == level || Level.ERROR == level) {
                 boolean updateError;
                 String preLevelStr = MDC.get("otel.span.scope.error.level");
                 if (preLevelStr == null) {
