@@ -11,3 +11,5 @@ pool:
 
 steps:
 - template: templates/include-steps.yml
+- script: |
+    ls -a
