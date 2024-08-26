@@ -12,5 +12,5 @@ pool:
 steps:
 - script: |
     echo Starting the build
-    ./gradlew extendedAgent
+    sudo ./gradlew extendedAgent
   displayName: 'Build'
