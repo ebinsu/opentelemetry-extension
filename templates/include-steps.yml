@@ -1,0 +1,5 @@
+steps:
+- script: |
+    chmod +x ./gradlew
+    ./gradlew extendedAgent
+  displayName: 'Build with tpl'

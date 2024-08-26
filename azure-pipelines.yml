@@ -10,7 +10,4 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: |
-    chmod +x ./gradlew
-    ./gradlew extendedAgent
-  displayName: 'Build'
+- template: templates/include-steps.yml
