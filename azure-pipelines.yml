@@ -18,11 +18,18 @@ steps:
   #- template: templates/include-steps.yml
   - bash: |
       commitAuthor=$(git log | head -4 | grep Author | awk -F '[:<]' '{print $2}' | sed 's/ //g')
+      lowerName = ${commitAuthor,,}
+      if [[ $lowerName =~ 'ebin' ]]
+      then
+      echo "包含"
+      else
+      echo "不包含"
+      fi
       echo ${commitAuthor}
       echo "xx ${commitAuthor}"
       echo '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> build success. \n\n Service: ${{ variables.serviceName }} Env: $(Build.SourceBranchName) \n\n Commit Message: $(Build.SourceVersionMessage)"}'
-#      curl -X POST -H 'Authorization: Bearer $(token)' \
-#      -H 'Content-type: application/json' \
-#        --data '{"channel":"C050W5GADEH","text":"<@$(commitAuthor)> ${{ variables.serviceName }} $(Build.SourceBranchName) $(Build.SourceVersionMessage) build success."}' \
-#        https://slack.com/api/chat.postMessage
+      curl -X POST -H 'Authorization: Bearer $(token)' \
+      -H 'Content-type: application/json' \
+        --data '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> build success. \n\n Service: ${{ variables.serviceName }} Env: $(Build.SourceBranchName) \n\n Commit Message: $(Build.SourceVersionMessage)"}' \
+        https://slack.com/api/chat.postMessage
 
