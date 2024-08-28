@@ -17,9 +17,8 @@ variables:
 steps:
   #- template: templates/include-steps.yml
   - bash: |
-      commitAuthor=$(git log | head -4 | grep Author | awk -F '[:<]' '{print $2}' | sed 's/ //g')
-      lowerName = ${commitAuthor,,}
-      if [[ $lowerName =~ "ebin" ]]
+      commitAuthor=$(git log | head -4 | grep Author | awk -F '[:<]' '{print $2}' | sed 's/ //g' | tr A-Z a-z)
+      if [[ $commitAuthor =~ "ebin" ]]
       then
       echo "包含"
       else
