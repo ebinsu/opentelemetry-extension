@@ -16,9 +16,11 @@ variables:
 
 steps:
   #- template: templates/include-steps.yml
-  - script: |
+  - bash: |
+      export commitAuthor=$(git log | head -4 | grep Author | awk -F '[:<]' '{print $2}' | sed 's/ //g')
+      
       curl -X POST -H 'Authorization: Bearer $(token)' \
       -H 'Content-type: application/json' \
-        --data '{"channel":"C050W5GADEH","text":"${{ variables.serviceName }} $(Build.SourceBranchName) $(Build.SourceVersionMessage) build success."}' \
+        --data '{"channel":"C050W5GADEH","text":"<$commitAuthor> ${{ variables.serviceName }} $(Build.SourceBranchName) $(Build.SourceVersionMessage) build success."}' \
         https://slack.com/api/chat.postMessage
 
