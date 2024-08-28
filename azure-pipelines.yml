@@ -21,6 +21,6 @@ steps:
       
       curl -X POST -H 'Authorization: Bearer $(token)' \
       -H 'Content-type: application/json' \
-        --data '{"channel":"C050W5GADEH","text":"<$commitAuthor> ${{ variables.serviceName }} $(Build.SourceBranchName) $(Build.SourceVersionMessage) build success."}' \
+        --data '{"channel":"C050W5GADEH","text":"<@$commitAuthor> ${{ variables.serviceName }} $(Build.SourceBranchName) $(Build.SourceVersionMessage) build success."}' \
         https://slack.com/api/chat.postMessage
 
