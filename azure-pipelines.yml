@@ -4,12 +4,21 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
 trigger:
-- main
+  - main
 
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  - name: serviceName
+    value: fulfillment-service
+
+
 steps:
-- template: templates/include-steps.yml
-- script: |
-    ls -a
+  #- template: templates/include-steps.yml
+  - script: |
+      curl -X POST -H 'Authorization: Bearer $(token)' \
+      -H 'Content-type: application/json' \
+        --data '{"channel":"C050W5GADEH","text":"${{ variables.serviceName }} $(Build.SourceBranchName) $(Build.SourceVersionMessage) build success."}' \
+        https://slack.com/api/chat.postMessage
+
