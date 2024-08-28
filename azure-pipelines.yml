@@ -20,7 +20,7 @@ steps:
       commitAuthor=$(git log | head -4 | grep Author | awk -F '[:<]' '{print $2}' | sed 's/ //g' | tr A-Z a-z)
       if [[ $commitAuthor =~ "ebin" ]]
       then
-      echo "包含"
+      commitAuthor="U02325RV7D1"
       else
       echo "不包含"
       fi
