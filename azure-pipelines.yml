@@ -20,8 +20,7 @@ steps:
       commitAuthor=$(git log | head -4 | grep Author | awk -F '[:<]' '{print $2}' | sed 's/ //g')
       echo ${commitAuthor}
       echo "xx ${commitAuthor}"
-      data = '@${commitAuthor} Service: ${{ variables.serviceName }} Env: $(Build.SourceBranchName) \n\n Commit Message: $(Build.SourceVersionMessage)'
-      echo ${data}
+      echo '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> ${{ variables.serviceName }} $(Build.SourceBranchName) $(Build.SourceVersionMessage) build success."}'
 #      curl -X POST -H 'Authorization: Bearer $(token)' \
 #      -H 'Content-type: application/json' \
 #        --data '{"channel":"C050W5GADEH","text":"<@$(commitAuthor)> ${{ variables.serviceName }} $(Build.SourceBranchName) $(Build.SourceVersionMessage) build success."}' \
