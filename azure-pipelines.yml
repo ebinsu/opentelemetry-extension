@@ -19,7 +19,7 @@ steps:
   - bash: |
       commitAuthor=$(git log | head -4 | grep Author | awk -F '[:<]' '{print $2}' | sed 's/ //g')
       lowerName = ${commitAuthor,,}
-      if [[ $lowerName =~ 'ebin' ]]
+      if [[ $lowerName =~ "ebin" ]]
       then
       echo "包含"
       else
@@ -27,9 +27,9 @@ steps:
       fi
       echo ${commitAuthor}
       echo "xx ${commitAuthor}"
-      echo '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> build success. \n\n Service: ${{ variables.serviceName }} Env: $(Build.SourceBranchName) \n\n Commit Message: $(Build.SourceVersionMessage)"}'
-      curl -X POST -H 'Authorization: Bearer $(token)' \
-      -H 'Content-type: application/json' \
-        --data '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> build success. \n\n Service: ${{ variables.serviceName }} Env: $(Build.SourceBranchName) \n\n Commit Message: $(Build.SourceVersionMessage)"}' \
-        https://slack.com/api/chat.postMessage
+      echo '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> build success. \n\n Service: ${{ variables.serviceName }}   Env: $(Build.SourceBranchName) \n\n Commit: $(Build.SourceVersionMessage)"}'
+#      curl -X POST -H 'Authorization: Bearer $(token)' \
+#      -H 'Content-type: application/json' \
+#        --data '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> build success. \n\n Service: ${{ variables.serviceName }} Env: $(Build.SourceBranchName) \n\n Commit Message: $(Build.SourceVersionMessage)"}' \
+#        https://slack.com/api/chat.postMessage
 
