@@ -18,8 +18,9 @@ steps:
   #- template: templates/include-steps.yml
   - bash: |
       commitAuthor=$(git log | head -4 | grep Author | awk -F '[:<]' '{print $2}' | sed 's/ //g')
-      echo 'xx $commitAuthor'
-      echo '{"channel":"C050W5GADEH","text":"<@$commitAuthor> ${{ variables.serviceName }} $(Build.SourceBranchName) $(Build.SourceVersionMessage) build success."}'
+      echo 'xx ${commitAuthor}'
+      echo '${commitAuthor}'
+      echo '{"channel":"C050W5GADEH","text":"<@${commitAuthor}> ${{ variables.serviceName }} $(Build.SourceBranchName) $(Build.SourceVersionMessage) build success."}'
 #      curl -X POST -H 'Authorization: Bearer $(token)' \
 #      -H 'Content-type: application/json' \
 #        --data '{"channel":"C050W5GADEH","text":"<@$(commitAuthor)> ${{ variables.serviceName }} $(Build.SourceBranchName) $(Build.SourceVersionMessage) build success."}' \
