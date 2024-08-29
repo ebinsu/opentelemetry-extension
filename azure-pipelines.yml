@@ -34,6 +34,7 @@ stages:
               if [[ $commitAuthor =~ "ebin" ]] then
               fi
             displayName: "1"
+            continueOnError: true
           - bash: |
               echo 2
             displayName: "2"
