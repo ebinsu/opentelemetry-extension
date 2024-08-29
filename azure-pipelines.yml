@@ -28,7 +28,7 @@ steps:
       echo '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> build success. \n\n Service: ${{ variables.serviceName }}   Env: $(Build.SourceBranchName) \n\n Commit: $(Build.SourceVersionMessage)"}'
       
       buildUrl="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
-      echo buildUrl
+      echo $buildUrl
       
       curl -X POST -H 'Content-type: application/json' \
       --data '{"text":"<@'${commitAuthor}'> build success. \n\n Service: ${{ variables.serviceName }}   Env: $(Build.SourceBranchName) \n\n Commit: $(Build.SourceVersionMessage)"}' \
