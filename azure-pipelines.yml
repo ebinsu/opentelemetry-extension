@@ -12,9 +12,6 @@ pool:
 variables:
   - name: serviceName
     value: fulfillment-service
-parameters:
-  - name: env
-    value: dev
 
 stages:
   - stage:
@@ -35,6 +32,9 @@ stages:
               
               echo "##vso[task.setvariable variable=slackCommitAuthor]$commitAuthor"
               echo "##vso[task.setvariable variable=slackBuildUrl]$buildUrl"
+            parameters:
+              - name: env
+                value: dev
           - bash: |
               echo 1
               if [[ $commitAuthor =~ "ebin" ]] then
