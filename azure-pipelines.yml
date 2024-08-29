@@ -17,6 +17,7 @@ stages:
   - stage:
     jobs:
       - job:
+        steps:
           - bash: |
               buildUrl="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
               commitAuthor=$(git log | head -4 | grep Author | awk -F '[:<]' '{print $2}' | sed 's/ //g' | tr A-Z a-z)
@@ -30,24 +31,29 @@ stages:
               echo '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> *$(Build.SourceBranchName)* *${{ variables.serviceName }}* build success. <'${buildUrl}'|(Build Result)> \n\n *Commit*: $(Build.SourceVersionMessage)"}'
 
       - job:
+        steps:
           - bash: |
               echo B
 
   - stage:
     jobs:
       - job:
+        steps:
           - bash: |
               echo B1
       - job:
+        steps:
           - bash: |
               echo B2
 
   - stage:
     jobs:
       - job:
+        steps:
           - bash: |
               echo C1
       - job:
+        steps:
           - bash: |
               echo C2
 #steps:
