@@ -13,25 +13,46 @@ variables:
   - name: serviceName
     value: fulfillment-service
 
+stages:
+  - stage: A
+    jobs:
+      - job:
+          - bash: |
+              buildUrl="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
+              commitAuthor=$(git log | head -4 | grep Author | awk -F '[:<]' '{print $2}' | sed 's/ //g' | tr A-Z a-z)
+              if [[ $commitAuthor =~ "ebin" ]]; then
+              commitAuthor="U02325RV7D1"
+              elif [[ $commitAuthor =~ "alex" ]]; then
+              commitAuthor="U027GEC49C6"
+              elif [[ $commitAuthor =~ "simple" ]]; then
+              commitAuthor="U023RP3A15W"
+              fi
+              echo '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> *$(Build.SourceBranchName)* *${{ variables.serviceName }}* build success. <'${buildUrl}'|(Build Result)> \n\n *Commit*: $(Build.SourceVersionMessage)"}'
 
-steps:
-  #- template: templates/include-steps.yml
-  - bash: |
-      buildUrl="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
-      commitAuthor=$(git log | head -4 | grep Author | awk -F '[:<]' '{print $2}' | sed 's/ //g' | tr A-Z a-z)
-      if [[ $commitAuthor =~ "ebin" ]]; then
-      commitAuthor="U02325RV7D1"
-      elif [[ $commitAuthor =~ "alex" ]]; then
-      commitAuthor="U027GEC49C6"
-      elif [[ $commitAuthor =~ "simple" ]]; then
-      commitAuthor="U023RP3A15W"
-      fi
-      echo '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> <'${buildUrl}'|(Build Result)>. \n\n *Service*: ${{ variables.serviceName }}  *Env*: $(Build.SourceBranchName) \n\n *Commit*: $(Build.SourceVersionMessage)"}'
+      - job: A2
+
+  - stage: B
+    jobs:
+      - job: B1
+      - job: B2
+#steps:
+#  #- template: templates/include-steps.yml
+#  - bash: |
+#      buildUrl="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
+#      commitAuthor=$(git log | head -4 | grep Author | awk -F '[:<]' '{print $2}' | sed 's/ //g' | tr A-Z a-z)
+#      if [[ $commitAuthor =~ "ebin" ]]; then
+#      commitAuthor="U02325RV7D1"
+#      elif [[ $commitAuthor =~ "alex" ]]; then
+#      commitAuthor="U027GEC49C6"
+#      elif [[ $commitAuthor =~ "simple" ]]; then
+#      commitAuthor="U023RP3A15W"
+#      fi
+#      echo '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> *$(Build.SourceBranchName)* *${{ variables.serviceName }}* build success. <'${buildUrl}'|(Build Result)> \n\n *Commit*: $(Build.SourceVersionMessage)"}'
+#
+#
       
-      
-      
-      curl -X POST -H 'Authorization: Bearer $(token)' \
-      -H 'Content-type: application/json' \
-        --data '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> <'${buildUrl}'|(Build Result)>. \n\n *Service*: ${{ variables.serviceName }}  *Env*: $(Build.SourceBranchName) \n\n *Commit*: $(Build.SourceVersionMessage)"}' \
-        https://slack.com/api/chat.postMessage
+#      curl -X POST -H 'Authorization: Bearer $(token)' \
+#      -H 'Content-type: application/json' \
+#        --data '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> <'${buildUrl}'|(Build Result)>. \n\n *Service*: ${{ variables.serviceName }}  *Env*: $(Build.SourceBranchName) \n\n *Commit*: $(Build.SourceVersionMessage)"}' \
+#        https://slack.com/api/chat.postMessage
 
