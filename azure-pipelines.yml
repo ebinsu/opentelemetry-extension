@@ -44,13 +44,13 @@ stages:
             displayName: "2"
           - bash: |
               echo 3
-              echo '{"channel":"C050W5GADEH","text":"<@'$(slackCommitAuthor)'> ** *${{ parameters.serviceName }}* build succeeded. <'$(buildUrl)'|(Build Result)> \n\n *Commit message*: $(Build.SourceVersionMessage)"}'
+              echo '{"channel":"C050W5GADEH","text":"<@'$(slackCommitAuthor)'> ** ** build succeeded. <'$(buildUrl)'|(Build Result)> \n\n *Commit message*: $(Build.SourceVersionMessage)"}'
             displayName: "3 succeeded"
             condition: succeeded()
             continueOnError: true
           - bash: |
               echo 4
-              echo '{"channel":"C050W5GADEH","text":"<@'$(slackCommitAuthor)'> ** *${{ parameters.serviceName }}* build succeeded. <'$(buildUrl)'|(Build Result)> \n\n *Commit message*: $(Build.SourceVersionMessage)"}'
+              echo '{"channel":"C050W5GADEH","text":"<@'$(slackCommitAuthor)'> ** ** build succeeded. <'$(buildUrl)'|(Build Result)> \n\n *Commit message*: $(Build.SourceVersionMessage)"}'
             displayName: "4 failed"
             condition: failed()
             continueOnError: true
