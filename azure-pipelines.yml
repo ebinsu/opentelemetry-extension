@@ -29,7 +29,14 @@ stages:
               commitAuthor="U023RP3A15W"
               fi
               echo '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> *$(Build.SourceBranchName)* *${{ variables.serviceName }}* build success. <'${buildUrl}'|(Build Result)> \n\n *Commit*: $(Build.SourceVersionMessage)"}'
-
+          - bash: |
+              echo 1
+            condition: succeeded()
+          - bash: |
+              echo 2
+            condition: failed()
+          - bash: |
+              echo 3
       - job:
         steps:
           - bash: |
