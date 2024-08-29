@@ -33,16 +33,21 @@ stages:
               echo 1
               if [[ $commitAuthor =~ "ebin" ]] then
               fi
+            displayName: "1"
           - bash: |
               echo 2
+            displayName: "2"
           - bash: |
               echo 3
+            displayName: "3 succeeded"
             condition: succeeded()
           - bash: |
               echo 4
+            displayName: "4 failed"
             condition: failed()
           - bash: |
-              echo 35
+              echo 5
+            displayName: "5"
       - job:
         steps:
           - bash: |
