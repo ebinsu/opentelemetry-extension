@@ -28,7 +28,9 @@ steps:
       fi
       echo '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> build success. \n\n Service: ${{ variables.serviceName }}   Env: $(Build.SourceBranchName) \n\n Commit: $(Build.SourceVersionMessage)"}'
       
-      curl -X POST -H 'Content-type: application/json' --data '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> build success. \n\n Service: ${{ variables.serviceName }}   Env: $(Build.SourceBranchName) \n\n Commit: $(Build.SourceVersionMessage)"}' https://hooks.slack.com/services/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
+      curl -X POST -H 'Content-type: application/json' \
+      --data '{"text":"<@'${commitAuthor}'> build success. \n\n Service: ${{ variables.serviceName }}   Env: $(Build.SourceBranchName) \n\n Commit: $(Build.SourceVersionMessage)"}' \
+      https://hooks.slack.com/services/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
 
 #      curl -X POST -H 'Authorization: Bearer $(token)' \
 #      -H 'Content-type: application/json' \
