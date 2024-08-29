@@ -12,6 +12,8 @@ pool:
 variables:
   - name: serviceName
     value: fulfillment-service
+  - name: env
+    value: dev
 
 stages:
   - stage:
