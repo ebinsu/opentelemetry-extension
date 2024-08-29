@@ -27,6 +27,9 @@ steps:
       fi
       echo '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> build success. \n\n Service: ${{ variables.serviceName }}   Env: $(Build.SourceBranchName) \n\n Commit: $(Build.SourceVersionMessage)"}'
       
+      buildUrl="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
+      echo buildUrl
+      
       curl -X POST -H 'Content-type: application/json' \
       --data '{"text":"<@'${commitAuthor}'> build success. \n\n Service: ${{ variables.serviceName }}   Env: $(Build.SourceBranchName) \n\n Commit: $(Build.SourceVersionMessage)"}' \
       https://hooks.slack.com/services/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
