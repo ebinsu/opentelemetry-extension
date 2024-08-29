@@ -18,12 +18,11 @@ steps:
   #- template: templates/include-steps.yml
   - bash: |
       commitAuthor=$(git log | head -4 | grep Author | awk -F '[:<]' '{print $2}' | sed 's/ //g' | tr A-Z a-z)
-      if [[ $commitAuthor =~ "ebin" ]]
-      then
+      if [[ $commitAuthor =~ "ebin" ]] then
       commitAuthor="U02325RV7D1"
-      else if [[ $commitAuthor =~ "alex" ]]
+      elif [[ $commitAuthor =~ "alex" ]] then
       commitAuthor="U027GEC49C6"
-      else if [[ $commitAuthor =~ "simple" ]]
+      elif [[ $commitAuthor =~ "simple" ]] then
       commitAuthor="U023RP3A15W"
       fi
       echo '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> build success. \n\n Service: ${{ variables.serviceName }}   Env: $(Build.SourceBranchName) \n\n Commit: $(Build.SourceVersionMessage)"}'
