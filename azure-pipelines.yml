@@ -42,10 +42,12 @@ stages:
               echo 3
             displayName: "3 succeeded"
             condition: succeeded()
+            continueOnError: true
           - bash: |
               echo 4
             displayName: "4 failed"
             condition: failed()
+            continueOnError: true
           - bash: |
               echo 5
             displayName: "5"
