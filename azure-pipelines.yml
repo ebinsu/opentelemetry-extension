@@ -40,11 +40,15 @@ stages:
             displayName: "2"
           - bash: |
               echo 3
+              if [[ $commitAuthor =~ "ebin" ]] then
+              fi
             displayName: "3 succeeded"
             condition: succeeded()
             continueOnError: true
           - bash: |
               echo 4
+              if [[ $commitAuthor =~ "ebin" ]] then
+              fi
             displayName: "4 failed"
             condition: failed()
             continueOnError: true
