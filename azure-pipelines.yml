@@ -29,6 +29,8 @@ stages:
               commitAuthor="U023RP3A15W"
               fi
               echo '{"channel":"C050W5GADEH","text":"<@'${commitAuthor}'> *$(Build.SourceBranchName)* *${{ variables.serviceName }}* build success. <'${buildUrl}'|(Build Result)> \n\n *Commit*: $(Build.SourceVersionMessage)"}'
+              
+              echo "##vso[task.setvariable variable=slackCommitAuthor]$commitAuthor"
           - bash: |
               echo 1
               if [[ $commitAuthor =~ "ebin" ]] then
@@ -40,47 +42,21 @@ stages:
             displayName: "2"
           - bash: |
               echo 3
-              if [[ $commitAuthor =~ "ebin" ]] then
-              fi
+              echo $(slackCommitAuthor)
             displayName: "3 succeeded"
             condition: succeeded()
             continueOnError: true
           - bash: |
               echo 4
-              if [[ $commitAuthor =~ "ebin" ]] then
-              fi
+              echo $(slackCommitAuthor)
             displayName: "4 failed"
             condition: failed()
             continueOnError: true
           - bash: |
               echo 5
             displayName: "5"
-      - job:
-        steps:
-          - bash: |
-              echo B
 
-  - stage:
-    jobs:
-      - job:
-        steps:
-          - bash: |
-              echo B1
-      - job:
-        steps:
-          - bash: |
-              echo B2
 
-  - stage:
-    jobs:
-      - job:
-        steps:
-          - bash: |
-              echo C1
-      - job:
-        steps:
-          - bash: |
-              echo C2
 #steps:
 #  #- template: templates/include-steps.yml
 #  - bash: |
