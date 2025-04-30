@@ -32,8 +32,8 @@ jobs:
         uses: actions/cache@v4.2.3
         with:
           path: /tmp/.buildx-cache
-          key: opentelemetry-extension
-          restore-keys: opentelemetry-extension
+          key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
+          restore-keys: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
 
       - name: Docker Metadata action
         id: docker-meta
