@@ -20,7 +20,9 @@ jobs:
           cache: 'gradle'
 
       - name: Build agent
-        run: ./gradlew extendedAgent
+        run: |
+          chmod +x gradlew
+          ./gradlew extendedAgent
 
       - name: Docker Setup Buildx
         id: buildx
