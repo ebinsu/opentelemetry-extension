@@ -1,0 +1,62 @@
+name: build extension
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  DOCKER_REGISTRY: registry.cn-hangzhou.aliyuncs.com
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - name: Set up JDK
+        uses: actions/setup-java@v3.14.1
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Build agent
+        run: ./gradlew extendedAgent
+
+      - name: Docker Setup Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1.6.0
+
+      - name: Cache Docker layers
+        uses: actions/cache@v4.2.3
+        with:
+          path: /tmp/.buildx-cache
+          key: opentelemetry-extension
+          restore-keys: opentelemetry-extension
+
+      - name: Docker Metadata action
+        id: docker-meta
+        uses: docker/metadata-action@v5.7.0
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/core-framework/opentelemetry-javaagent
+          tags: ${{ github.run_number }}
+
+      - name: Docker Login
+        uses: docker/login-action@v3.4.0
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          logout: true
+
+      - name: Build and push
+        uses: docker/build-push-action@v6.16.0
+        with:
+          push: true
+          tags: ${{ steps.docker-meta.outputs.tags }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
