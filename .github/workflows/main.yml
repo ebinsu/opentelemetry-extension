@@ -30,15 +30,15 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v1.6.0
 
-      - name: List cache before restore
-        run: ls -la /tmp/.buildx-cache
-
       - name: Cache Docker layers
         uses: actions/cache@v4.2.3
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.ref }}
           restore-keys: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
+
+      - name: List cache before restore
+        run: ls -la /tmp/.buildx-cache
 
       - name: Output clean version
         run: |
