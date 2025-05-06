@@ -48,6 +48,8 @@ jobs:
         with:
           images: ${{ env.DOCKER_REGISTRY }}/core-framework/opentelemetry-javaagent
           tags: ${{ steps.set_image_version.outputs.version }}
+          flavor: |
+            latest=auto
 
       - name: Docker Login
         uses: docker/login-action@v3.4.0
