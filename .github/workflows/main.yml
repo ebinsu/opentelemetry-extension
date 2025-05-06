@@ -42,7 +42,7 @@ jobs:
           original="${{ github.ref_name }}"
           clean_version="${original#release/}"
           echo "$clean_version"
-          echo "::set-output name=version::$clean_version"
+          echo "VERSION=$clean_version" >> $GITHUB_OUTPUT
 
       - name: Docker Metadata action
         id: docker-meta
@@ -50,7 +50,7 @@ jobs:
         with:
           images: ${{ env.DOCKER_REGISTRY }}/core-framework/opentelemetry-javaagent
           tags: |
-            type=raw,value=${{ steps.set_image_version.outputs.version }}
+            type=raw,value=${{ steps.set_image_version.outputs.VERSION }}
             type=raw,value=latest
 
       - name: Docker Login
