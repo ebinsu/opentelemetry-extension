@@ -47,9 +47,11 @@ jobs:
         uses: docker/metadata-action@v5.7.0
         with:
           images: ${{ env.DOCKER_REGISTRY }}/core-framework/opentelemetry-javaagent
-          tags: ${{ steps.set_image_version.outputs.version }}
+          tags: |
+            type=raw,value=${{ steps.set_image_version.outputs.version }}
+            type=raw,value=latest
           flavor: |
-            latest=auto
+            latest=true
 
       - name: Docker Login
         uses: docker/login-action@v3.4.0
