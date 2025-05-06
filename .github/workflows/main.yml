@@ -1,4 +1,4 @@
-name: build extension
+name: build otel extension
 
 on:
   push:
