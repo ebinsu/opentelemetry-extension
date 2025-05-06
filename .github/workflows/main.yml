@@ -22,17 +22,13 @@ jobs:
       - name: Build agent
         run: gradle extendedAgent
 
-#      - name: test
-#        run: |
-#          ls
-#          cd build
-#          ls
-#          cd libs
-#          ls
+      - name: Check build output
+        run: |
+          ls -lR build/libs
 
       - name: Docker Setup Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v3.10.0
+        uses: docker/setup-buildx-action@v1.6.0
 
       - name: Cache Docker layers
         uses: actions/cache@v4.2.3
@@ -59,12 +55,13 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6.16.0
         with:
+          context: .
           push: true
           tags: ${{ steps.docker-meta.outputs.tags }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
-#      - name: Move cache
-#        run: |
-#          rm -rf /tmp/.buildx-cache
-#          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
