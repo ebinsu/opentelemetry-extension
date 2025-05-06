@@ -2,7 +2,7 @@ name: build extension
 
 on:
   push:
-    branches: [ master ]
+    branches: [ "release/*" ]
 
 env:
   DOCKER_REGISTRY: registry.cn-hangzhou.aliyuncs.com
@@ -30,12 +30,22 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v1.6.0
 
+      - name: List cache before restore
+        run: ls -la /tmp/.buildx-cache
+
       - name: Cache Docker layers
         uses: actions/cache@v4.2.3
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
+          key: ${{ runner.os }}-buildx-${{ github.ref }}
           restore-keys: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
+
+      - name: Output clean version
+        run: |
+          original=${{ github.ref_name }}
+          echo "$original"
+          clean_version="${original#release/}"
+          echo "$clean_version"
 
       - name: Docker Metadata action
         id: docker-meta
@@ -60,6 +70,9 @@ jobs:
           tags: ${{ steps.docker-meta.outputs.tags }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+      - name: List cache after restore
+        run: ls -la /tmp/.buildx-cache
 
       - name: Move cache
         run: |
