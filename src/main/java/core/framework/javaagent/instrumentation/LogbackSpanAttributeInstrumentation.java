@@ -90,7 +90,9 @@ public class LogbackSpanAttributeInstrumentation implements TypeInstrumentation 
                             errorCode = name;
                         }
                     }
-                    span.setStatus(StatusCode.ERROR, errorCode);
+                    if (Level.ERROR == level) {
+                        span.setStatus(StatusCode.ERROR, errorCode);
+                    }
                     span.setAttribute("error.code", errorCode);
                     span.setAttribute("error.message", event.getFormattedMessage());
                     span.setAttribute("error.level", level.toString());

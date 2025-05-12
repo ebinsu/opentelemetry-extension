@@ -25,7 +25,7 @@ import java.util.List;
  * @see CoreFrameworkAutoConfigurationCustomizerProvider
  */
 public class HealthEndpointSampler implements Sampler {
-    private String healthEndpoint;
+    private final String healthEndpoint;
 
     public HealthEndpointSampler(String healthEndpoint) {
         this.healthEndpoint = healthEndpoint;
