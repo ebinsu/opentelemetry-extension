@@ -84,6 +84,7 @@ dependencies {
     compileOnly group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.0.0'
     compileOnly group: 'org.slf4j', name: 'slf4j-api', version: '2.0.14'
     compileOnly("ch.qos.logback:logback-classic:1.5.6")
+    compileOnly("io.undertow:undertow-core:2.3.18.Final")
 
     //All dependencies below are only for tests
     testImplementation("org.testcontainers:testcontainers:1.20.1")

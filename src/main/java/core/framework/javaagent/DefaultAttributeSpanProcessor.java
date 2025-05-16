@@ -12,7 +12,6 @@ import io.opentelemetry.sdk.trace.SpanProcessor;
 public class DefaultAttributeSpanProcessor implements SpanProcessor {
     @Override
     public void onStart(Context parentContext, ReadWriteSpan span) {
-        span.setAttribute("error.code", "NONE");
     }
 
     @Override

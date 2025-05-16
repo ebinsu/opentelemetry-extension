@@ -23,7 +23,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
 /**
  * @author ebin
  */
-public class LogbackSpanAttributeInstrumentation implements TypeInstrumentation {
+public class LogbackInstrumentation implements TypeInstrumentation {
     @Override
     public ElementMatcher<TypeDescription> typeMatcher() {
         return named("ch.qos.logback.classic.Logger");
@@ -37,7 +37,7 @@ public class LogbackSpanAttributeInstrumentation implements TypeInstrumentation 
                 .and(named("callAppenders"))
                 .and(takesArguments(1))
                 .and(takesArgument(0, named("ch.qos.logback.classic.spi.ILoggingEvent"))),
-            LogbackSpanAttributeInstrumentation.class.getName() + "$CallAppendersAdvice");
+            LogbackInstrumentation.class.getName() + "$CallAppendersAdvice");
     }
 
     @SuppressWarnings("unused")
@@ -94,7 +94,6 @@ public class LogbackSpanAttributeInstrumentation implements TypeInstrumentation 
                         span.setStatus(StatusCode.ERROR, errorCode);
                     }
                     span.setAttribute("error.code", errorCode);
-                    span.setAttribute("error.message", event.getFormattedMessage());
                     span.setAttribute("error.level", level.toString());
                 }
             }
